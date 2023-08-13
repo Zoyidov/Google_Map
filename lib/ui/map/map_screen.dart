@@ -1,5 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -30,10 +32,17 @@ class _MapScreenState extends State<MapScreen> {
   late CameraPosition currentCameraPosition;
   late LatLng _selectedLocation;
   String _selectedAddress = '';
+  bool myLocationButtonEnabled = true;
+  FloatingActionButtonLocation floatingActionButtonLocation =
+      FloatingActionButtonLocation.centerDocked;
+
+  final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
 
   @override
   void initState() {
     super.initState();
+    _systemOfDevice();
     Provider.of<AddressProvider>(context, listen: false).loadAddresses();
     _selectedLocation = widget.latLong;
     initialCameraPosition = CameraPosition(target: _selectedLocation, zoom: 15);
@@ -46,6 +55,16 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _selectedAddress = addressProvider.scrolledAddressText;
     });
+  }
+
+  void _systemOfDevice() {
+    if (Platform.isIOS) {
+      myLocationButtonEnabled = true;
+      floatingActionButtonLocation = FloatingActionButtonLocation.centerDocked;
+    } else if (Platform.isAndroid) {
+      myLocationButtonEnabled = false;
+      floatingActionButtonLocation = FloatingActionButtonLocation.endFloat;
+    } else {}
   }
 
   @override
@@ -73,6 +92,7 @@ class _MapScreenState extends State<MapScreen> {
         body: Stack(
           children: [
             GoogleMap(
+              zoomControlsEnabled: false,
               compassEnabled: false,
               padding: const EdgeInsets.only(
                 bottom: 25,
@@ -80,8 +100,10 @@ class _MapScreenState extends State<MapScreen> {
               mapType: _selectedMapType,
               mapToolbarEnabled: true,
               myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              onMapCreated: (controller) {},
+              myLocationButtonEnabled: myLocationButtonEnabled,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+              },
               onTap: (LatLng location) {
                 setState(() {
                   currentCameraPosition = CameraPosition(
@@ -101,12 +123,12 @@ class _MapScreenState extends State<MapScreen> {
                 Marker(
                   markerId: const MarkerId('selectedLocation'),
                   position: _selectedLocation,
-                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                      BitmapDescriptor.hueRed),
                 ),
               },
             ),
-            _selectedAddress.isNotEmpty ? const CurrentAddressField() : const Text(''),
+            _selectedAddress.isNotEmpty
+                ? CurrentAddressField()
+                : const Text(''),
             Positioned(
               right: 10,
               top: 5,
@@ -133,17 +155,16 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
             Positioned(
-              right: 3,
-              top: 40,
-              child: TypeOfMap(
-                mapType: _selectedMapType,
-                onChanged: (mapType) {
-                  setState(() {
-                    _selectedMapType = mapType;
-                  });
-                },
-              ),
-            ),
+                right: 3,
+                top: 40,
+                child: TypeOfMap(
+                  mapType: _selectedMapType,
+                  onChanged: (mapType) {
+                    setState(() {
+                      _selectedMapType = mapType;
+                    });
+                  },
+                )),
             Positioned(
               right: 10,
               top: 90,
@@ -174,11 +195,47 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ),
             ),
+            myLocationButtonEnabled == false
+                ? Positioned(
+                    right: 10,
+                    top: 210,
+                    child: ZoomTapAnimation(
+                      onTap: () {
+                        setState(() {
+                          context
+                              .read<AddressCallProvider>()
+                              .getAddressByLatLong(
+                                latLng: currentCameraPosition.target,
+                              );
+                          _followMe(cameraPosition: initialCameraPosition);
+                        });
+                      },
+                      child: Container(
+                        height: 33,
+                        width: 33,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: Colors.black.withOpacity(0.8)),
+                        child: const Icon(
+                          Icons.gps_fixed,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
+                : const Text(''),
             const Positioned(top: 125, right: 2, child: KindOfAddress()),
             const Positioned(top: 165, right: 2, child: LanguageOfAddress()),
           ],
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButtonLocation: floatingActionButtonLocation,
         floatingActionButton: const SaveAddressButton());
+  }
+
+  Future<void> _followMe({required CameraPosition cameraPosition}) async {
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(
+      CameraUpdate.newCameraPosition(cameraPosition),
+    );
   }
 }

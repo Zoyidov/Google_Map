@@ -12,7 +12,7 @@ class ApiService {
       baseUrl: baseUrl,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": '8219fdc8-4567-447b-a4d7-7daf4c9ee892',
+        "Authorization": apiKey,
       },
       connectTimeout: Duration(seconds: TimeOutConstants.connectTimeout),
       receiveTimeout: Duration(seconds: TimeOutConstants.receiveTimeout),

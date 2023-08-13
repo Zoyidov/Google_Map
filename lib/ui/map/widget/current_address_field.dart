@@ -1,9 +1,12 @@
+// ignore_for_file: non_constant_identifier_names, must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:login_screen_homework/data/providers/address_call_provider.dart';
 import 'package:provider/provider.dart';
 
 class CurrentAddressField extends StatelessWidget {
-  const CurrentAddressField({super.key});
+  bool Address = true;
+   CurrentAddressField({super.key});
 
   @override
   Widget build(BuildContext context) {

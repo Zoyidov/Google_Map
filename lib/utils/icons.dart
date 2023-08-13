@@ -9,6 +9,7 @@ class AppImages{
   static const String usa = "assets/images/usa.png";
   static const String rus = "assets/images/rus.png";
   static const String turk = "assets/images/turk.png";
+  static const String marker = "assets/images/marker.png";
 
   //svg
   static const String profile = "assets/svg/profile.svg";

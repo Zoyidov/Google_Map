@@ -68,7 +68,10 @@ class _LanguageOfAddressState extends State<LanguageOfAddress> {
 
             return PopupMenuItem<String>(
               value: value,
-              child: Text(text,style: const TextStyle(color: Colors.white),),
+              child: Text(
+                text,
+                style: const TextStyle(color: Colors.white),
+              ),
             );
           },
         ).toList();

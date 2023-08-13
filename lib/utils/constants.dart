@@ -1,9 +1,5 @@
-const String adminEmail = "admin@gmail.com";
-
-const defaultImageConstant = "Select Image";
-
 const baseUrl = "https://geocode-maps.yandex.ru";
-const String apiKey = "98766a71-a866-47bf-8184-2f9cb48187d2";
+const String apiKey = "8219fdc8-4567-447b-a4d7-7daf4c9ee892";
 
 class TimeOutConstants {
   static int connectTimeout = 30;

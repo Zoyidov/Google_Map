@@ -26,14 +26,15 @@ class _KindOfAddressState extends State<KindOfAddress> {
             borderRadius: BorderRadius.circular(50),
             color: Colors.black.withOpacity(0.8)),
         child: selectedIndex == 0
-            ? const Icon(CupertinoIcons.home, color: Colors.amber, size: 18)
+            ? const Icon(CupertinoIcons.home, color: Colors.white, size: 18)
             : selectedIndex == 1
-            ? const Icon(Icons.directions_subway_outlined,
-            color: Colors.blueAccent, size: 20)
-            : selectedIndex == 2
-            ? const Icon(CupertinoIcons.location_fill,
-            color: Colors.white, size: 20)
-            : const Icon(Icons.line_axis, color: Colors.green, size: 20),
+                ? const Icon(Icons.directions_subway_outlined,
+                    color: Colors.blueAccent, size: 20)
+                : selectedIndex == 2
+                    ? const Icon(CupertinoIcons.location_fill,
+                        color: Colors.amber, size: 20)
+                    : const Icon(Icons.line_axis,
+                        color: Colors.green, size: 20),
       ),
       initialValue: selectedIndex,
       onSelected: (int index) {

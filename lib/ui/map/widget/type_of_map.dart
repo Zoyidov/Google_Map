@@ -37,8 +37,8 @@ class _TypeOfMapState extends State<TypeOfMap> {
           color: _selectedMapType == MapType.satellite
               ? const Color(0xFF00ACC1)
               : _selectedMapType == MapType.hybrid
-              ? const Color(0xFF00ACC1)
-              : Colors.white,
+                  ? const Color(0xFF00ACC1)
+                  : Colors.white,
         ),
       ),
       onSelected: (MapType result) {
